@@ -2,8 +2,6 @@ import { el, text, setChildren, setStyle, setAttr } from "https://redom.js.org/r
 
 window.addEventListener('DOMContentLoaded', async() => {
 
-    //TODO : Pasar el cambio de la validacion del prefijo del Cuit (Solo app.js)
-
     //#region "Fake Database"
 
     const fetchTiposClaveUnicaFamiliar = () => Promise.resolve([
@@ -142,13 +140,12 @@ window.addEventListener('DOMContentLoaded', async() => {
             // CUSTOM VALIDATIONS
 
             if (this.element.dataset.validation === 'cuilt' && this.message.textContent === '') {
-
+                
                 const isPersonaFisica = this.element.parentNode.parentNode.parentNode.id.includes('familiar');
 
                 const isValidCuiltPrefix = (this.element.value.startsWith("2") && isPersonaFisica) || (this.element.value.startsWith("3") && !isPersonaFisica);
 
                 this.message.textContent = isValidCuiltPrefix ? validateCuilt(this.element.value) : `El cuit ingresado no pertenece a una persona ${isPersonaFisica ? 'fisica' : 'juridica'}`;
-
             };
 
             if (this.element.dataset.validation === 'tin' && this.message.textContent === '') {
@@ -467,7 +464,7 @@ window.addEventListener('DOMContentLoaded', async() => {
 
     }
 
-
+    setStyle(document.querySelector('#main'), showOrHideByCondition(true));
 
     document.querySelector('#showFamiliar').addEventListener('click', () => {
         
