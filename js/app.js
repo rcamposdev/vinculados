@@ -13,14 +13,14 @@ window.addEventListener('DOMContentLoaded', async() => {
     const tiposClaveUnica   = await fetchTiposClaveUnicaFamiliar();
 
     const fetchPaisesEmisoresTINFamiliar  = () => Promise.resolve([
-        { value : "02", text : "BOLIVIA", min: "09", max : "16", flag : "🇧🇴"},
-        { value : "03", text : "BRASIL", min: "14", max : "16", flag : "🇧🇷"},
-        { value : "04", text : "CHINA", min: "15", max : "20", flag : "🇨🇳"},
-        { value : "05", text : "ESPAÑA", min: "09", max : "16", flag : "🇪🇸"},
-        { value : "06", text : "ESTADOS UNIDOS", min: "09", max : "16", flag : "🇺🇸"},
-        { value : "07", text : "OTRO", min: "05", max : "20", flag : "🇺🇷"},
-        { value : "08", text : "PARAGUAY", min: "09", max : "16", flag : "🇵🇾"},
-        { value : "08", text : "URUGUAY", min: "12", max : "16", flag : "🇺🇾"}
+        { value : "02", text : "BOLIVIA", min: "09", max : "16", flag : "bo"},
+        { value : "03", text : "BRASIL", min: "14", max : "16", flag : "br"},
+        { value : "04", text : "CHINA", min: "15", max : "20", flag : "cn"},
+        { value : "05", text : "ESPAÑA", min: "09", max : "16", flag : "es"},
+        { value : "06", text : "ESTADOS UNIDOS", min: "09", max : "16", flag : "us"},
+        { value : "07", text : "OTRO", min: "05", max : "20", flag : "un"}, /* Bandera de la Organización de las Naciones Unidas */
+        { value : "08", text : "PARAGUAY", min: "09", max : "16", flag : "py"},
+        { value : "08", text : "URUGUAY", min: "12", max : "16", flag : "uy"}
     ]);  
     const paisesEmisoresTIN  = await fetchPaisesEmisoresTINFamiliar();
 
@@ -114,6 +114,14 @@ window.addEventListener('DOMContentLoaded', async() => {
         return '';
 
     }
+
+    const getImageFlag = pais_emisor_TIN => {
+
+        const pais = paisesEmisoresTIN.find(x => x.value === pais_emisor_TIN);
+
+        return el('img.ml-2', { src : `https://flagcdn.com/16x12/${pais.flag}.png`, alt : pais.text});
+
+    };
 
     class Control{
 
@@ -407,7 +415,9 @@ window.addEventListener('DOMContentLoaded', async() => {
                 const buttonClassName = vinculado.tipo === 'Familiar' ? 'btn-outline-primary' : 'btn-outline-success';
 
                 const descripcion = vinculado.tipo === 'Familiar' ? vinculado.nombre + ' ' + vinculado.apellido : vinculado.razon_social;
-                const identificacion = vinculado.tipo_identificacion !== '05' ? vinculado.identificacion : vinculado.identificacion + ' ' + paisesEmisoresTIN.find(x => x.value === vinculado.pais_emisor_TIN).flag;
+                
+                // Si es Residente del exterior muestro la bandera asociada al NIF/TIN. Sino muestro solo el nro de Cuil/Cuit
+                const identificacion = vinculado.tipo_identificacion !== '05' ? el('span', text(vinculado.identificacion))  : [el('span', text(vinculado.identificacion)), getImageFlag(vinculado.pais_emisor_TIN)];
                 
                 this.btnEdit = el(`button.btn.${buttonClassName}.mx-1`, el('i.fa.fa-pencil'));
                 this.btnDelete = el(`button.btn.${buttonClassName}.mx-1`, el('i.fa.fa-trash'));
@@ -450,7 +460,7 @@ window.addEventListener('DOMContentLoaded', async() => {
                     el('th', {'textContent' : index + 1 , 'scope' : 'row'}),
                     el('td', {'textContent' : vinculado.tipo.toUpperCase()}),
                     el('td', {'textContent' : descripcion.toUpperCase()}),
-                    el('td', text(identificacion)),
+                    el('td', identificacion),
                     el('td', [this.btnEdit, this.btnDelete])
                 ]);
 
