@@ -154,6 +154,19 @@ window.addEventListener('DOMContentLoaded', async() => {
                 const isValidCuiltPrefix = (this.element.value.startsWith("2") && isPersonaFisica) || (this.element.value.startsWith("3") && !isPersonaFisica);
 
                 this.message.textContent = isValidCuiltPrefix ? validateCuilt(this.element.value) : `El cuit ingresado no pertenece a una persona ${isPersonaFisica ? 'fisica' : 'juridica'}`;
+
+                if (this.message.textContent === '') { // Si el formato del cuil/cuit es correcto, valido que el mismo no pertenezca al titular de la declaracion jurada
+                    
+                    const queryString = window.location.search;
+
+                    const cuilTitular = new URLSearchParams(queryString).get('cuit') ?? 0;
+
+                    console.log(`El cuit del titular es ${cuilTitular}`);
+
+                    this.message.textContent = this.element.value === cuilTitular ? 'El cuil informado pertenece al titular' : '';
+
+                }
+
             };
 
             if (this.element.dataset.validation === 'tin' && this.message.textContent === '') {
