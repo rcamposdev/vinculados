@@ -167,6 +167,8 @@ window.addEventListener('DOMContentLoaded', async() => {
 
                 }
 
+                //TODO : Carga de Informacion desde CU
+
             };
 
             if (this.element.dataset.validation === 'tin' && this.message.textContent === '') {
