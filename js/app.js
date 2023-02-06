@@ -2,6 +2,8 @@ import { el, text, setChildren, setStyle, setAttr } from "https://redom.js.org/r
 
 window.addEventListener('DOMContentLoaded', async() => {
 
+    //* Ejemplo de Query => http://https://rcamposdev.github.io/vinculados?cuit=20369040864&tipoDDJJ=1
+
     //#region "Fake Database"
 
     const fetchTiposClaveUnicaFamiliar = () => Promise.resolve([
@@ -75,16 +77,30 @@ window.addEventListener('DOMContentLoaded', async() => {
 
     //#endregion
 
+    const showOrHideByCondition = booleanShowCondition => booleanShowCondition ? {'display' : 'block'} : {'display' : 'none'};
+
+    // Leo parametros de URL
+
+    const queryString = window.location.search;
+
+    const CUIL_TITULAR = new URLSearchParams(queryString).get('cuit') ?? 0;
+
+    const TIPO_DDJJ = new URLSearchParams(queryString).get('tipoDDJJ') ?? "2";
+
+    setStyle(document.querySelector('#showEmpresa'), showOrHideByCondition(TIPO_DDJJ !== "1"));
+
+    // Carga de Vinculados desde Local Storage
+
     let vinculados = [];
 
-    const vinculadosExistInLocalStorage = localStorage.getItem('vinculados') !== null;
+    const LOCAL_STORAGE_NAME = `vinculados_${CUIL_TITULAR}`;
 
-    if (vinculadosExistInLocalStorage) vinculados = JSON.parse(localStorage.getItem('vinculados'));
+    const vinculadosExistInLocalStorage = localStorage.getItem(LOCAL_STORAGE_NAME) !== null;
+
+    if (vinculadosExistInLocalStorage) vinculados = JSON.parse(localStorage.getItem(LOCAL_STORAGE_NAME));
 
     let frmFamiliar;
     let frmEmpresa;
-
-    const showOrHideByCondition = booleanShowCondition => booleanShowCondition ? {'display' : 'block'} : {'display' : 'none'};
 
     const validateCuilt = cuilt => {
         
@@ -155,19 +171,17 @@ window.addEventListener('DOMContentLoaded', async() => {
 
                 this.message.textContent = isValidCuiltPrefix ? validateCuilt(this.element.value) : `El cuit ingresado no pertenece a una persona ${isPersonaFisica ? 'fisica' : 'juridica'}`;
 
-                if (this.message.textContent === '') { // Si el formato del cuil/cuit es correcto, valido que el mismo no pertenezca al titular de la declaracion jurada
+                // Si el formato del cuil/cuit es correcto, valido que el mismo no pertenezca al titular de la declaracion jurada         
+                
+                if (this.message.textContent === '') this.message.textContent = this.element.value === CUIL_TITULAR ? 'El cuil informado pertenece al titular' : '';
+
+                if (this.message.textContent === '') {
+
+                    console.log(`Carga de Informacion desde CU para el cuil ${CUIL_TITULAR}`);
+
+                    //TODO : Carga de Informacion desde CU
                     
-                    const queryString = window.location.search;
-
-                    const cuilTitular = new URLSearchParams(queryString).get('cuit') ?? 0;
-
-                    console.log(`El cuit del titular es ${cuilTitular}`);
-
-                    this.message.textContent = this.element.value === cuilTitular ? 'El cuil informado pertenece al titular' : '';
-
                 }
-
-                //TODO : Carga de Informacion desde CU
 
             };
 
@@ -320,7 +334,7 @@ window.addEventListener('DOMContentLoaded', async() => {
 
             this.cargoFuncion = new Control({'name' : 'cargo_funcion'}, cargos);
 
-            this.participacionPorcentual = new Control({'name' : 'participacion_porcentual','type' : 'number', 'min' : 0, 'max' : 100,'data-validation' : 'participacion_porcentual', 'value' : obj ? obj.participacion_porcentual : '' });
+            this.participacionPorcentual = new Control({'name' : 'participacion_porcentual','type' : 'number', 'step' : '0.1', 'min' : 0, 'max' : 100,'data-validation' : 'participacion_porcentual', 'value' : obj ? obj.participacion_porcentual : '' });
 
             this.patrimonioNeto = new Control({'name' : 'patrimonio_neto','type' : 'number', 'value' : obj ? obj.patrimonio_neto : '' });
 
@@ -423,7 +437,7 @@ window.addEventListener('DOMContentLoaded', async() => {
 
             setStyle(document.querySelector('#table-area'), showOrHideByCondition(vinculados.length > 0)); // Muesto el area de la tabla si hay informacion
 
-            localStorage.setItem('vinculados', JSON.stringify(vinculados)); //* Guardo la lista en local Storage
+            localStorage.setItem(LOCAL_STORAGE_NAME, JSON.stringify(vinculados)); //* Guardo la lista en local Storage
 
             vinculados.forEach((vinculado,index) => {
 

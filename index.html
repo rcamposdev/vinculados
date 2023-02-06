@@ -9,6 +9,8 @@
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
+    <link rel="stylesheet" href="style.css">
+
     <title>Vinculados 2.0</title>
 
   </head>
@@ -16,8 +18,17 @@
 
     <div class="container mt-3" id="main" style="display: none;">
 
-        <button id="showFamiliar" type="button" class="btn btn-primary" data-toggle="modal" data-target="#familiarModal">Nuevo familiar</button>   
-        <button id="showEmpresa" type="button" class="btn btn-success" data-toggle="modal" data-target="#empresaModal">Nueva empresa</button>   
+        <h3>Carga de vinculación con empresas o entidades del país o del exterior</h3>
+
+        <div class="row">
+            <div class="col col-md-2 px-1">
+                <button id="showFamiliar" type="button" class="btn btn-primary btn-block" data-toggle="modal" data-target="#familiarModal">Nuevo familiar</button>   
+            </div>
+            <div class="col col-md-2 px-1">
+                <button id="showEmpresa" type="button" class="btn btn-success btn-block" data-toggle="modal" data-target="#empresaModal">Nueva empresa</button>   
+            </div>
+        </div>
+
 
         <div class="modal fade" id="familiarModal" tabindex="-1" aria-labelledby="familiarModalLabel" aria-hidden="true">
             <div class="modal-dialog">
